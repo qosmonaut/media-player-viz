@@ -16,6 +16,7 @@
         <div class="controls">
             <button id="startBtn" class="btn primary">Start Microphone</button>
             <button id="stopBtn" class="btn" disabled>Stop</button>
+            <button id="fullscreenBtn" class="btn fullscreen-btn">⛶ Fullscreen</button>
             
             <div class="viz-selector">
                 <label for="vizType">Visualization:</label>
@@ -39,8 +40,9 @@
             </div>
         </div>
         
-        <div class="visualizer-container">
+        <div class="visualizer-container" id="visualizerContainer">
             <canvas id="visualizer"></canvas>
+            <button id="exitFullscreenBtn" class="exit-fullscreen-btn" style="display: none;">✕ Exit Fullscreen</button>
         </div>
         
         <div class="status" id="status">
