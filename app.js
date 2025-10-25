@@ -52,7 +52,7 @@ async function startVisualization() {
         
         // If permission was previously denied, show helpful message
         if (permissionStatus && permissionStatus.state === 'denied') {
-            updateStatus('❌ Microphone access was denied. Please click the 🔒 icon in your browser\'s address bar and allow microphone access, then try again.');
+            updateStatus('❌ Microphone access was denied. Please click the lock/permissions icon in your browser\'s address bar and allow microphone access, then try again.');
             startBtn.disabled = false;
             stopBtn.disabled = true;
             return;
@@ -95,7 +95,7 @@ async function startVisualization() {
         let errorMessage = '❌ Error: Could not access microphone. ';
         
         if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-            errorMessage += 'Permission was denied. Please click the 🔒 icon in your browser\'s address bar and allow microphone access, then try again.';
+            errorMessage += 'Permission was denied. Please click the lock/permissions icon in your browser\'s address bar and allow microphone access, then try again.';
         } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
             errorMessage += 'No microphone found. Please connect a microphone and try again.';
         } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
