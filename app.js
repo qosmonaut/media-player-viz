@@ -5,6 +5,7 @@
 let audioContext;
 let analyser;
 let microphone;
+let mediaStream;
 let dataArray;
 let bufferLength;
 let animationId;
@@ -49,7 +50,7 @@ async function startVisualization() {
         dataArray = new Uint8Array(bufferLength);
         
         // Request microphone access
-        const stream = await navigator.mediaDevices.getUserMedia({ 
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
             audio: {
                 echoCancellation: false,
                 noiseSuppression: false,
@@ -57,7 +58,7 @@ async function startVisualization() {
             } 
         });
         
-        microphone = audioContext.createMediaStreamSource(stream);
+        microphone = audioContext.createMediaStreamSource(mediaStream);
         microphone.connect(analyser);
         
         // Update UI
@@ -87,8 +88,9 @@ function stopVisualization() {
         animationId = null;
     }
     
-    if (microphone && microphone.mediaStream) {
-        microphone.mediaStream.getTracks().forEach(track => track.stop());
+    if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
     }
     
     if (audioContext) {
@@ -145,8 +147,8 @@ document.addEventListener('visibilitychange', () => {
  * Clean up on page unload
  */
 window.addEventListener('beforeunload', () => {
-    if (microphone && microphone.mediaStream) {
-        microphone.mediaStream.getTracks().forEach(track => track.stop());
+    if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
     }
     if (audioContext) {
         audioContext.close();
