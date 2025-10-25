@@ -14,13 +14,13 @@
         </header>
         
         <div class="controls">
-            <button id="startBtn" class="btn primary">Start Microphone</button>
-            <button id="stopBtn" class="btn" disabled>Stop</button>
-            <button id="fullscreenBtn" class="btn fullscreen-btn">⛶ Fullscreen</button>
+            <button id="startBtn" class="btn primary" aria-label="Start microphone input for visualization">Start Microphone</button>
+            <button id="stopBtn" class="btn" disabled aria-label="Stop microphone input">Stop</button>
+            <button id="fullscreenBtn" class="btn fullscreen-btn" aria-label="Enter fullscreen mode">⛶ Fullscreen</button>
             
             <div class="viz-selector">
                 <label for="vizType">Visualization:</label>
-                <select id="vizType">
+                <select id="vizType" aria-label="Choose visualization type">
                     <option value="bars">Bars</option>
                     <option value="oscilloscope">Oscilloscope</option>
                     <option value="spectrum">Spectrum</option>
@@ -30,7 +30,7 @@
             
             <div class="color-selector">
                 <label for="colorScheme">Color:</label>
-                <select id="colorScheme">
+                <select id="colorScheme" aria-label="Choose color scheme">
                     <option value="classic">Classic Blue</option>
                     <option value="fire">Fire</option>
                     <option value="ocean">Ocean</option>
@@ -41,11 +41,11 @@
         </div>
         
         <div class="visualizer-container" id="visualizerContainer">
-            <canvas id="visualizer"></canvas>
-            <button id="exitFullscreenBtn" class="exit-fullscreen-btn" style="display: none;">✕ Exit Fullscreen</button>
+            <canvas id="visualizer" role="img" aria-label="Audio visualization display"></canvas>
+            <button id="exitFullscreenBtn" class="exit-fullscreen-btn" style="display: none;" aria-label="Exit fullscreen mode">✕ Exit Fullscreen</button>
         </div>
         
-        <div class="status" id="status">
+        <div class="status" id="status" role="status" aria-live="polite">
             Click "Start Microphone" to begin
         </div>
     </div>
