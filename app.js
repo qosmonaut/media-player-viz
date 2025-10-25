@@ -228,11 +228,13 @@ function handleFullscreenChange() {
     
     if (isFullscreen) {
         fullscreenBtn.textContent = '⛶ Exit Fullscreen';
+        fullscreenBtn.setAttribute('aria-label', 'Exit fullscreen mode');
         exitFullscreenBtn.style.display = 'block';
         // Trigger canvas resize for fullscreen
         visualizer.resizeCanvas();
     } else {
         fullscreenBtn.textContent = '⛶ Fullscreen';
+        fullscreenBtn.setAttribute('aria-label', 'Enter fullscreen mode');
         exitFullscreenBtn.style.display = 'none';
         // Trigger canvas resize for normal mode
         visualizer.resizeCanvas();
@@ -245,8 +247,8 @@ document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('mozfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
-// ESC key listener is built-in to the Fullscreen API
-// It automatically exits fullscreen when ESC is pressed
+// Note: The Fullscreen API automatically handles ESC key to exit fullscreen.
+// No additional event listener is needed for ESC key functionality.
 
 /**
  * Handle page visibility changes to save resources
