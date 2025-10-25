@@ -39,6 +39,25 @@ colorSchemeSelect.addEventListener('change', (e) => {
  */
 async function startVisualization() {
     try {
+        updateStatus('Checking microphone permissions...');
+        
+        // Check current permission status
+        let permissionStatus;
+        try {
+            permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+        } catch (permError) {
+            // Permissions API might not be supported in some browsers, continue anyway
+            console.warn('Permissions API not supported, proceeding with getUserMedia');
+        }
+        
+        // If permission was previously denied, show helpful message
+        if (permissionStatus && permissionStatus.state === 'denied') {
+            updateStatus('❌ Microphone access was denied. Please click the 🔒 icon in your browser\'s address bar and allow microphone access, then try again.');
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            return;
+        }
+        
         updateStatus('Requesting microphone access...');
         
         // Create audio context
@@ -71,7 +90,25 @@ async function startVisualization() {
         
     } catch (error) {
         console.error('Error accessing microphone:', error);
-        updateStatus('❌ Error: Could not access microphone. Please grant permission and try again.');
+        
+        // Provide more helpful error messages based on error type
+        let errorMessage = '❌ Error: Could not access microphone. ';
+        
+        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+            errorMessage += 'Permission was denied. Please click the 🔒 icon in your browser\'s address bar and allow microphone access, then try again.';
+        } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+            errorMessage += 'No microphone found. Please connect a microphone and try again.';
+        } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+            errorMessage += 'Microphone is already in use by another application. Please close other apps using the microphone and try again.';
+        } else if (error.name === 'OverconstrainedError' || error.name === 'ConstraintNotSatisfiedError') {
+            errorMessage += 'Could not find a microphone matching the requested settings.';
+        } else if (error.name === 'SecurityError') {
+            errorMessage += 'Microphone access is not allowed on this page. Make sure you\'re using HTTPS or localhost.';
+        } else {
+            errorMessage += 'Please check your browser settings and try again.';
+        }
+        
+        updateStatus(errorMessage);
         
         // Reset buttons
         startBtn.disabled = false;
