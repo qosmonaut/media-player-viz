@@ -14,10 +14,13 @@ let visualizer;
 // DOM elements
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
 const vizTypeSelect = document.getElementById('vizType');
 const colorSchemeSelect = document.getElementById('colorScheme');
 const statusDiv = document.getElementById('status');
 const canvas = document.getElementById('visualizer');
+const visualizerContainer = document.getElementById('visualizerContainer');
 
 // Initialize visualizer
 visualizer = new Visualizer(canvas);
@@ -25,6 +28,8 @@ visualizer = new Visualizer(canvas);
 // Event listeners
 startBtn.addEventListener('click', startVisualization);
 stopBtn.addEventListener('click', stopVisualization);
+fullscreenBtn.addEventListener('click', toggleFullscreen);
+exitFullscreenBtn.addEventListener('click', exitFullscreen);
 vizTypeSelect.addEventListener('change', (e) => {
     visualizer.setType(e.target.value);
     updateStatus(`Visualization changed to: ${e.target.options[e.target.selectedIndex].text}`);
@@ -128,6 +133,83 @@ function animate() {
 function updateStatus(message) {
     statusDiv.textContent = message;
 }
+
+/**
+ * Toggle fullscreen mode
+ */
+function toggleFullscreen() {
+    if (!document.fullscreenElement && 
+        !document.webkitFullscreenElement && 
+        !document.mozFullScreenElement && 
+        !document.msFullscreenElement) {
+        enterFullscreen();
+    } else {
+        exitFullscreen();
+    }
+}
+
+/**
+ * Enter fullscreen mode
+ */
+function enterFullscreen() {
+    const element = visualizerContainer;
+    
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    }
+}
+
+/**
+ * Exit fullscreen mode
+ */
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+}
+
+/**
+ * Handle fullscreen state changes
+ */
+function handleFullscreenChange() {
+    const isFullscreen = !!(document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            document.mozFullScreenElement || 
+                            document.msFullscreenElement);
+    
+    if (isFullscreen) {
+        fullscreenBtn.textContent = '⛶ Exit Fullscreen';
+        exitFullscreenBtn.style.display = 'block';
+        // Trigger canvas resize for fullscreen
+        visualizer.resizeCanvas();
+    } else {
+        fullscreenBtn.textContent = '⛶ Fullscreen';
+        exitFullscreenBtn.style.display = 'none';
+        // Trigger canvas resize for normal mode
+        visualizer.resizeCanvas();
+    }
+}
+
+// Listen for fullscreen changes
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+// ESC key listener is built-in to the Fullscreen API
+// It automatically exits fullscreen when ESC is pressed
 
 /**
  * Handle page visibility changes to save resources
