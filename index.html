@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Player Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Media Player Visualizer</h1>
+            <p>Classic Windows Media Player-style audio visualizations</p>
+        </header>
+        
+        <div class="controls">
+            <button id="startBtn" class="btn primary">Start Microphone</button>
+            <button id="stopBtn" class="btn" disabled>Stop</button>
+            
+            <div class="viz-selector">
+                <label for="vizType">Visualization:</label>
+                <select id="vizType">
+                    <option value="bars">Bars</option>
+                    <option value="oscilloscope">Oscilloscope</option>
+                    <option value="spectrum">Spectrum</option>
+                    <option value="circular">Circular</option>
+                </select>
+            </div>
+            
+            <div class="color-selector">
+                <label for="colorScheme">Color:</label>
+                <select id="colorScheme">
+                    <option value="classic">Classic Blue</option>
+                    <option value="fire">Fire</option>
+                    <option value="ocean">Ocean</option>
+                    <option value="rainbow">Rainbow</option>
+                    <option value="neon">Neon Green</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="visualizer-container">
+            <canvas id="visualizer"></canvas>
+        </div>
+        
+        <div class="status" id="status">
+            Click "Start Microphone" to begin
+        </div>
+    </div>
+    
+    <footer>
+        <p>Created with Web Audio API | <a href="https://github.com/qosmonaut/media-player-viz">View on GitHub</a></p>
+    </footer>
+    
+    <script src="visualizer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
