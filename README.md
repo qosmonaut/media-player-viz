@@ -1,6 +1,6 @@
-# Media Player Visualizer 🎵
+# RetroViz
 
-Old school Windows Media Player visualizations as a webapp using browser microphone input.
+Old school Winamp / Windows Media Player visualizations as a webapp using browser microphone input.
 
 ## Features
 

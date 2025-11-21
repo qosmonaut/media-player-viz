@@ -1,16 +1,23 @@
 {
-  "name": "media-player-viz",
+  "name": "retroviz",
   "version": "1.0.0",
-  "description": "Old school Windows Media Player visualizations as a webapp using browser microphone input.",
+  "description": "Old school Winamp / Windows Media Player visualizations as a webapp using browser microphone input.",
   "main": "app.js",
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "retro",
+    "visualizer",
+    "audio",
+    "butterchurn",
+    "milkdrop",
+    "webaudio"
+  ],
+  "author": "qosmonaut",
+  "license": "MIT",
   "dependencies": {
     "butterchurn": "^2.6.7",
     "butterchurn-presets": "^2.4.7"
