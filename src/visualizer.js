@@ -57,11 +57,6 @@ class Visualizer {
     
     setType(type) {
         this.type = type;
-        
-        // If switching to butterchurn and not initialized, we need to wait for audio context
-        if (type === 'milkdrop' && !this.butterchurnVisualizer && this.audioContext) {
-            // Will be initialized when draw is called with audio node
-        }
     }
     
     setColorScheme(scheme) {
