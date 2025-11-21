@@ -1,6 +1,8 @@
 # RetroViz
 
-Old school Winamp / Windows Media Player visualizations as a webapp using browser microphone input.
+Old school Winamp music visualizations as a webapp using browser microphone input.
+
+![RetroViz Screenshot](screenshot.jpg)
 
 ## Features
 
