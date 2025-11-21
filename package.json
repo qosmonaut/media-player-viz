@@ -6,6 +6,8 @@
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
+    "start": "npx http-server ./dist",
+    "dev": "concurrently \"npm run watch\" \"npm run start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -23,6 +25,8 @@
     "butterchurn-presets": "^2.4.7"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
+    "copy-webpack-plugin": "^13.0.1",
     "webpack": "^5.103.0",
     "webpack-cli": "^6.0.1"
   }
