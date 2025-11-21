@@ -12,60 +12,103 @@ let dataArray;
 let bufferLength;
 let animationId;
 let visualizer;
+let isRunning = false;
 
 // DOM elements
-const startBtn = document.getElementById('startBtn');
-const stopBtn = document.getElementById('stopBtn');
-const fullscreenBtn = document.getElementById('fullscreenBtn');
-const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const iconPlay = playPauseBtn.querySelector('.icon-play');
+const iconStop = playPauseBtn.querySelector('.icon-stop');
 const vizTypeSelect = document.getElementById('vizType');
 const colorSchemeSelect = document.getElementById('colorScheme');
+const presetSelect = document.getElementById('presetSelect');
+const colorControl = document.getElementById('colorControl');
+const presetControl = document.getElementById('presetControl');
 const statusDiv = document.getElementById('status');
 const canvas = document.getElementById('visualizer');
-const visualizerContainer = document.getElementById('visualizerContainer');
+const presetOverlay = document.getElementById('presetOverlay');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const fullscreenHint = document.getElementById('fullscreenHint');
 
 // Initialize visualizer
-visualizer = new Visualizer(canvas);
+visualizer = new Visualizer(canvas, null, (presetName) => {
+    // Flash preset name when auto-rotating
+    if (visualizer.isAutoRotating) {
+        const shortName = presetName.length > 50 ? presetName.substring(0, 50) + '...' : presetName;
+        presetOverlay.textContent = shortName;
+        presetOverlay.classList.add('visible');
+        
+        setTimeout(() => {
+            presetOverlay.classList.remove('visible');
+        }, 3000);
+    }
+});
+
+// Ensure initial state is Milkdrop
+vizTypeSelect.value = 'milkdrop';
+visualizer.setType('milkdrop');
+colorControl.style.display = 'none';
+presetControl.style.display = 'flex';
+
+// Populate presets
+const presets = visualizer.getPresets();
+Object.keys(presets).forEach(key => {
+    const option = document.createElement('option');
+    option.value = key;
+    option.text = key;
+    presetSelect.appendChild(option);
+});
 
 // Event listeners
-startBtn.addEventListener('click', startVisualization);
-stopBtn.addEventListener('click', stopVisualization);
+playPauseBtn.addEventListener('click', toggleVisualization);
 fullscreenBtn.addEventListener('click', toggleFullscreen);
-exitFullscreenBtn.addEventListener('click', exitFullscreen);
+
 vizTypeSelect.addEventListener('change', (e) => {
-    visualizer.setType(e.target.value);
-    updateStatus(`Visualization changed to: ${e.target.options[e.target.selectedIndex].text}`);
+    const type = e.target.value;
+    visualizer.setType(type);
+    
+    // Toggle controls based on type
+    if (type === 'milkdrop') {
+        colorControl.style.display = 'none';
+        presetControl.style.display = 'flex';
+    } else {
+        colorControl.style.display = 'flex';
+        presetControl.style.display = 'none';
+    }
+    
+    showStatus(`Visualization: ${e.target.options[e.target.selectedIndex].text}`);
 });
+
 colorSchemeSelect.addEventListener('change', (e) => {
     visualizer.setColorScheme(e.target.value);
-    updateStatus(`Color scheme changed to: ${e.target.options[e.target.selectedIndex].text}`);
+    showStatus(`Color: ${e.target.options[e.target.selectedIndex].text}`);
 });
+
+presetSelect.addEventListener('change', (e) => {
+    visualizer.setPreset(e.target.value);
+    if (e.target.value === 'auto') {
+        showStatus('Auto-rotating presets (15s)');
+    } else {
+        showStatus(`Preset: ${e.target.value}`);
+    }
+});
+
+/**
+ * Toggle visualization state
+ */
+function toggleVisualization() {
+    if (isRunning) {
+        stopVisualization();
+    } else {
+        startVisualization();
+    }
+}
 
 /**
  * Start the visualization by requesting microphone access
  */
 async function startVisualization() {
     try {
-        updateStatus('Checking microphone permissions...');
-        
-        // Check current permission status
-        let permissionStatus;
-        try {
-            permissionStatus = await navigator.permissions.query({ name: 'microphone' });
-        } catch (permError) {
-            // Permissions API might not be supported in some browsers, continue anyway
-            console.warn('Permissions API not supported, proceeding with getUserMedia');
-        }
-        
-        // If permission was previously denied, show helpful message
-        if (permissionStatus && permissionStatus.state === 'denied') {
-            updateStatus('❌ Microphone access was denied. Please click the lock/permissions icon in your browser\'s address bar and allow microphone access, then try again.');
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-            return;
-        }
-        
-        updateStatus('Requesting microphone access...');
+        showStatus('Requesting microphone access...');
         
         // Create audio context
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -91,38 +134,19 @@ async function startVisualization() {
         visualizer.initButterchurn(audioContext, microphone);
         
         // Update UI
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-        updateStatus('🎤 Microphone active - Visualization running');
+        isRunning = true;
+        iconPlay.style.display = 'none';
+        iconStop.style.display = 'inline';
+        playPauseBtn.setAttribute('aria-label', 'Stop Visualization');
+        showStatus('Microphone Active');
         
         // Start animation loop
         animate();
         
     } catch (error) {
         console.error('Error accessing microphone:', error);
-        
-        // Provide more helpful error messages based on error type
-        let errorMessage = '❌ Error: Could not access microphone. ';
-        
-        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-            errorMessage += 'Permission was denied. Please click the lock/permissions icon in your browser\'s address bar and allow microphone access, then try again.';
-        } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
-            errorMessage += 'No microphone found. Please connect a microphone and try again.';
-        } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
-            errorMessage += 'Microphone is already in use by another application. Please close other apps using the microphone and try again.';
-        } else if (error.name === 'OverconstrainedError' || error.name === 'ConstraintNotSatisfiedError') {
-            errorMessage += 'Could not find a microphone matching the requested settings.';
-        } else if (error.name === 'SecurityError') {
-            errorMessage += 'Microphone access is not allowed on this page. Make sure you\'re using HTTPS or localhost.';
-        } else {
-            errorMessage += 'Please check your browser settings and try again.';
-        }
-        
-        updateStatus(errorMessage);
-        
-        // Reset buttons
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
+        showStatus('Error: Could not access microphone');
+        stopVisualization();
     }
 }
 
@@ -130,6 +154,8 @@ async function startVisualization() {
  * Stop the visualization and release microphone
  */
 function stopVisualization() {
+    isRunning = false;
+    
     if (animationId) {
         cancelAnimationFrame(animationId);
         animationId = null;
@@ -146,20 +172,21 @@ function stopVisualization() {
     }
     
     // Clear canvas
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'rgb(0, 0, 0)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    visualizer.clear();
     
     // Update UI
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    updateStatus('Visualization stopped');
+    iconPlay.style.display = 'inline';
+    iconStop.style.display = 'none';
+    playPauseBtn.setAttribute('aria-label', 'Start Visualization');
+    showStatus('Stopped');
 }
 
 /**
  * Animation loop for continuous visualization
  */
 function animate() {
+    if (!isRunning) return;
+    
     animationId = requestAnimationFrame(animate);
     
     // Get frequency data
@@ -169,117 +196,59 @@ function animate() {
     visualizer.draw(dataArray, bufferLength);
 }
 
+let statusTimeout;
 /**
- * Update status message
+ * Update status message with auto-hide
  */
-function updateStatus(message) {
+function showStatus(message) {
     statusDiv.textContent = message;
+    statusDiv.classList.remove('hidden');
+    
+    if (statusTimeout) clearTimeout(statusTimeout);
+    
+    statusTimeout = setTimeout(() => {
+        statusDiv.classList.add('hidden');
+    }, 3000);
 }
 
 /**
  * Toggle fullscreen mode
  */
 function toggleFullscreen() {
-    if (!document.fullscreenElement && 
-        !document.webkitFullscreenElement && 
-        !document.mozFullScreenElement && 
-        !document.msFullscreenElement) {
-        enterFullscreen();
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+        fullscreenHint.classList.add('visible');
+        setTimeout(() => {
+            fullscreenHint.classList.remove('visible');
+        }, 3000);
     } else {
-        exitFullscreen();
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
     }
 }
 
-/**
- * Enter fullscreen mode
- */
-function enterFullscreen() {
-    const element = visualizerContainer;
-    
-    if (element.requestFullscreen) {
-        element.requestFullscreen();
-    } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-    } else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
-    } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
+// Listen for fullscreen changes to update UI if needed (e.g. ESC key)
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+        fullscreenHint.classList.remove('visible');
     }
-}
+});
 
-/**
- * Exit fullscreen mode
- */
-function exitFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-    } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-    }
-}
-
-/**
- * Handle fullscreen state changes
- */
-function handleFullscreenChange() {
-    const isFullscreen = !!(document.fullscreenElement || 
-                            document.webkitFullscreenElement || 
-                            document.mozFullScreenElement || 
-                            document.msFullscreenElement);
-    
-    if (isFullscreen) {
-        fullscreenBtn.textContent = '⛶ Exit Fullscreen';
-        fullscreenBtn.setAttribute('aria-label', 'Exit fullscreen mode');
-        exitFullscreenBtn.style.display = 'block';
-        // Trigger canvas resize for fullscreen
-        visualizer.resizeCanvas();
-    } else {
-        fullscreenBtn.textContent = '⛶ Fullscreen';
-        fullscreenBtn.setAttribute('aria-label', 'Enter fullscreen mode');
-        exitFullscreenBtn.style.display = 'none';
-        // Trigger canvas resize for normal mode
-        visualizer.resizeCanvas();
-    }
-}
-
-// Listen for fullscreen changes
-document.addEventListener('fullscreenchange', handleFullscreenChange);
-document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-// Note: The Fullscreen API automatically handles ESC key to exit fullscreen.
-// No additional event listener is needed for ESC key functionality.
-
-/**
- * Handle page visibility changes to save resources
- */
+// Handle page visibility changes
 document.addEventListener('visibilitychange', () => {
-    if (document.hidden && animationId) {
-        // Page is hidden, pause animation but keep microphone active
+    if (document.hidden && isRunning) {
         cancelAnimationFrame(animationId);
         animationId = null;
-    } else if (!document.hidden && audioContext && !animationId) {
-        // Page is visible again, resume animation
+    } else if (!document.hidden && isRunning && !animationId) {
         animate();
     }
 });
 
-/**
- * Clean up on page unload
- */
+// Clean up on page unload
 window.addEventListener('beforeunload', () => {
-    if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-    }
-    if (audioContext) {
-        audioContext.close();
-    }
+    stopVisualization();
 });
 
-// Initial status message
-updateStatus('Click "Start Microphone" to begin');

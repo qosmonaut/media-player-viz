@@ -6,11 +6,11 @@ Old school Winamp / Windows Media Player visualizations as a webapp using browse
 
 - **Real-time audio visualization** from your microphone
 - **Multiple visualization types:**
+  - Milkdrop - Classic Winamp Milkdrop visualizer powered by butterchurn
   - Bars - Classic frequency bars
   - Oscilloscope - Waveform display
   - Spectrum - Frequency spectrum with reflections
   - Circular - Radial frequency display
-  - Milkdrop - Classic Winamp Milkdrop visualizer powered by butterchurn
 - **Multiple color schemes:**
   - Classic Blue
   - Fire

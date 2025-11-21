@@ -5,58 +5,170 @@ import butterchurnPresets from 'butterchurn-presets';
  * Visualizer class - handles different visualization types
  */
 class Visualizer {
-    constructor(canvas, audioContext = null) {
+    constructor(canvas, audioContext = null, onPresetChange = null) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this.type = 'bars';
+        this.container = canvas.parentNode;
+        this.type = 'milkdrop';
+        
+        if (this.type !== 'milkdrop') {
+            this.ctx = canvas.getContext('2d');
+        } else {
+            this.ctx = null;
+        }
+
         this.colorScheme = 'classic';
         this.audioContext = audioContext;
+        this.onPresetChange = onPresetChange;
         this.butterchurnVisualizer = null;
         this.butterchurnAudioNode = null;
+        this.presets = butterchurnPresets.getPresets();
+        this.presetKeys = Object.keys(this.presets);
+        this.currentPresetIndex = 0;
+        this.autoRotateInterval = null;
+        this.isAutoRotating = true;
+        
         this.resizeCanvas();
         
         window.addEventListener('resize', () => this.resizeCanvas());
     }
     
     resizeCanvas() {
-        const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = rect.width;
-        this.canvas.height = rect.height;
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
+        // Use window dimensions for immersive mode
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
         
         // Resize butterchurn if active
         if (this.butterchurnVisualizer) {
             this.butterchurnVisualizer.setRendererSize(this.width, this.height);
         }
     }
+
+    clear() {
+        if (this.ctx) {
+            this.ctx.fillStyle = 'rgb(0, 0, 0)';
+            this.ctx.fillRect(0, 0, this.width, this.height);
+        }
+        // Stop auto-rotation when clearing/stopping
+        this.stopAutoRotate();
+    }
+
+    recreateCanvas() {
+        const newCanvas = document.createElement('canvas');
+        newCanvas.id = this.canvas.id;
+        // Copy attributes
+        newCanvas.setAttribute('role', this.canvas.getAttribute('role'));
+        newCanvas.setAttribute('aria-label', this.canvas.getAttribute('aria-label'));
+        
+        newCanvas.width = this.width;
+        newCanvas.height = this.height;
+        
+        this.container.replaceChild(newCanvas, this.canvas);
+        this.canvas = newCanvas;
+        
+        // Reset contexts
+        this.ctx = null;
+        this.butterchurnVisualizer = null;
+    }
     
     initButterchurn(audioContext, audioNode) {
         this.audioContext = audioContext;
+        this.butterchurnAudioNode = audioNode;
         
-        // Create butterchurn visualizer if it doesn't exist
-        if (!this.butterchurnVisualizer) {
-            this.butterchurnVisualizer = butterchurn.createVisualizer(audioContext, this.canvas, {
+        // Only initialize if we are currently in milkdrop mode
+        if (this.type === 'milkdrop') {
+            this.createButterchurnInstance();
+        }
+    }
+
+    createButterchurnInstance() {
+        if (this.butterchurnVisualizer) return;
+
+        try {
+            this.butterchurnVisualizer = butterchurn.createVisualizer(this.audioContext, this.canvas, {
                 width: this.width,
                 height: this.height
             });
             
-            // Load a preset
-            const presets = butterchurnPresets.getPresets();
-            const presetKeys = Object.keys(presets);
-            const preset = presets[presetKeys[0]]; // Load first preset
-            this.butterchurnVisualizer.loadPreset(preset, 0.0);
+            // Load initial preset
+            this.loadPreset(this.presetKeys[this.currentPresetIndex]);
+
+            if (this.butterchurnAudioNode) {
+                this.butterchurnVisualizer.connectAudio(this.butterchurnAudioNode);
+            }
+            
+            if (this.isAutoRotating) {
+                this.startAutoRotate();
+            }
+        } catch (e) {
+            console.error("Failed to initialize Butterchurn:", e);
         }
-        
-        // Connect audio
-        if (audioNode) {
-            this.butterchurnAudioNode = audioNode;
-            this.butterchurnVisualizer.connectAudio(audioNode);
+    }
+    
+    getPresets() {
+        return this.presets;
+    }
+
+    setPreset(presetName) {
+        if (presetName === 'auto') {
+            this.isAutoRotating = true;
+            this.startAutoRotate();
+        } else {
+            this.isAutoRotating = false;
+            this.stopAutoRotate();
+            this.loadPreset(presetName);
+        }
+    }
+
+    loadPreset(presetName) {
+        if (this.butterchurnVisualizer && this.presets[presetName]) {
+            this.butterchurnVisualizer.loadPreset(this.presets[presetName], 2.0); // 2.0s transition
+            
+            if (this.onPresetChange) {
+                this.onPresetChange(presetName);
+            }
+        }
+    }
+
+    startAutoRotate() {
+        this.stopAutoRotate();
+        this.autoRotateInterval = setInterval(() => {
+            this.currentPresetIndex = Math.floor(Math.random() * this.presetKeys.length);
+            const nextPreset = this.presetKeys[this.currentPresetIndex];
+            this.loadPreset(nextPreset);
+        }, 15000); // 15 seconds
+    }
+
+    stopAutoRotate() {
+        if (this.autoRotateInterval) {
+            clearInterval(this.autoRotateInterval);
+            this.autoRotateInterval = null;
         }
     }
     
     setType(type) {
+        const oldType = this.type;
         this.type = type;
+        
+        const isWebgl = type === 'milkdrop';
+        const wasWebgl = oldType === 'milkdrop';
+
+        if (isWebgl !== wasWebgl) {
+            this.recreateCanvas();
+            
+            if (isWebgl) {
+                // Switching to WebGL
+                if (this.audioContext) {
+                    this.createButterchurnInstance();
+                }
+            } else {
+                // Switching to 2D
+                this.stopAutoRotate();
+                this.ctx = this.canvas.getContext('2d');
+            }
+        }
     }
     
     setColorScheme(scheme) {
@@ -125,7 +237,7 @@ class Visualizer {
         this.ctx.fillStyle = 'rgb(0, 0, 0)';
         this.ctx.fillRect(0, 0, this.width, this.height);
         
-        const barWidth = (this.width / bufferLength) * 2.5;
+        const barWidth = (this.width / bufferLength);
         let x = 0;
         
         for (let i = 0; i < bufferLength; i++) {

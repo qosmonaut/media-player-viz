@@ -7,54 +7,65 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>RetroViz</h1>
-            <p>Classic Windows Media Player-style audio visualizations</p>
-        </header>
-        
-        <div class="controls">
-            <button id="startBtn" class="btn primary" aria-label="Start microphone input for visualization">Start Microphone</button>
-            <button id="stopBtn" class="btn" disabled aria-label="Stop microphone input">Stop</button>
-            <button id="fullscreenBtn" class="btn fullscreen-btn" aria-label="Enter fullscreen mode">⛶ Fullscreen</button>
-            
-            <div class="viz-selector">
-                <label for="vizType">Visualization:</label>
-                <select id="vizType">
-                    <option value="bars">Bars</option>
-                    <option value="oscilloscope">Oscilloscope</option>
-                    <option value="spectrum">Spectrum</option>
-                    <option value="circular">Circular</option>
-                    <option value="milkdrop">Milkdrop</option>
-                </select>
-            </div>
-            
-            <div class="color-selector">
-                <label for="colorScheme">Color:</label>
-                <select id="colorScheme">
-                    <option value="classic">Classic Blue</option>
-                    <option value="fire">Fire</option>
-                    <option value="ocean">Ocean</option>
-                    <option value="rainbow">Rainbow</option>
-                    <option value="neon">Neon Green</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="visualizer-container" id="visualizerContainer">
+    <div class="app-container">
+        <div class="visualizer-wrapper" id="visualizerContainer">
             <canvas id="visualizer" role="img" aria-label="Audio visualization display"></canvas>
-            <button id="exitFullscreenBtn" class="exit-fullscreen-btn" style="display: none;" aria-label="Exit fullscreen mode">✕ Exit Fullscreen</button>
         </div>
         
-        <div class="status" id="status" role="status" aria-live="polite">
-            Click "Start Microphone" to begin
+        <div class="controls-overlay">
+            <div class="controls-top">
+                <a href="https://github.com/qosmonaut/retroviz" class="app-title" target="_blank" aria-label="View source on GitHub">RetroViz</a>
+                <div class="credits">
+                    Built by <a href="https://github.com/qosmonaut" target="_blank">qosmonaut</a> |
+                    Powered by <a href="https://github.com/jberg/butterchurn" target="_blank">butterchurn</a>
+                </div>
+            </div>
+
+            <div class="controls-bottom">
+                <button id="playPauseBtn" class="btn-icon" aria-label="Start/Stop Visualization">
+                    <span class="icon-play">▶</span>
+                    <span class="icon-stop" style="display: none;">■</span>
+                </button>
+                
+                <div class="control-group">
+                    <select id="vizType" aria-label="Select Visualization Type">
+                        <option value="milkdrop" selected>Milkdrop</option>
+                        <option value="bars">Bars</option>
+                        <option value="oscilloscope">Oscilloscope</option>
+                        <option value="spectrum">Spectrum</option>
+                        <option value="circular">Circular</option>
+                    </select>
+                </div>
+                
+                <div class="control-group" id="colorControl" style="display: none;">
+                    <select id="colorScheme" aria-label="Select Color Scheme">
+                        <option value="classic">Classic Blue</option>
+                        <option value="fire">Fire</option>
+                        <option value="ocean">Ocean</option>
+                        <option value="rainbow">Rainbow</option>
+                        <option value="neon">Neon Green</option>
+                    </select>
+                </div>
+
+                <div class="control-group" id="presetControl">
+                    <select id="presetSelect" aria-label="Select Milkdrop Preset">
+                        <option value="auto">Auto-Rotate (15s)</option>
+                        <!-- Presets will be populated by JS -->
+                    </select>
+                </div>
+            </div>
         </div>
+        
+        <div class="status-overlay" id="status" role="status" aria-live="polite">
+            Ready
+        </div>
+        
+        <div id="presetOverlay" class="preset-overlay"></div>
+        <div id="fullscreenHint" class="fullscreen-hint">Press ESC to exit fullscreen mode</div>
+        
+        <button id="fullscreenBtn" class="btn-icon btn-fullscreen" aria-label="Toggle Fullscreen">⛶</button>
     </div>
     
-    <footer>
-        <p>Created with Web Audio API | Milkdrop visualizations powered by <a href="https://github.com/jberg/butterchurn">butterchurn</a> | <a href="https://github.com/qosmonaut/media-player-viz">View on GitHub</a></p>
-    </footer>
-
     <script src="index.js"></script>
 </body>
 </html>
