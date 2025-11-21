@@ -16,7 +16,8 @@ yarn-error.log*
 # Dependency directories
 node_modules/
 
-# Build outputs (dist is needed for GitHub Pages deployment)
+# Build outputs
+dist/
 build/
 
 # Temporary files
