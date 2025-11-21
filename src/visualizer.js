@@ -23,7 +23,7 @@ class Visualizer {
         this.butterchurnAudioNode = null;
         this.presets = butterchurnPresets.getPresets();
         this.presetKeys = Object.keys(this.presets);
-        this.currentPresetIndex = 0;
+        this.currentPresetIndex = Math.floor(Math.random() * this.presetKeys.length);
         this.autoRotateInterval = null;
         this.isAutoRotating = true;
         
