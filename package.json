@@ -1,7 +1,7 @@
 {
   "name": "retroviz",
-  "version": "1.1.1",
-  "description": "Old school Winamp music visualizations as a webapp using browser microphone input.",
+  "version": "1.1.2",
+  "description": "Old school Winamp music visualizations as a webapp with microphone or file input.",
   "main": "app.js",
   "scripts": {
     "build": "webpack",

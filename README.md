@@ -1,6 +1,6 @@
 # RetroViz
 
-Old school Winamp music visualizations as a webapp using browser microphone input.
+Old school Winamp music visualizations as a webapp with microphone or file input.
 
 ![RetroViz Screenshot](screenshot.jpg)
 
@@ -40,47 +40,15 @@ This project uses npm for dependency management and webpack for bundling.
 # Install dependencies
 npm install
 
+# Run local dev server on `http://localhost:8000` with hot-reload
+npm run dev
+
 # Build the project
 npm run build
 
-# Or watch for changes during development
-npm run watch
+# Deploy to Cloudflare Pages
+npm run deploy
 ```
-
-### Running Locally
-
-Simply open `index.html` in a web browser. For best results, use a local web server:
-
-```bash
-# Using Python 3
-python -m http.server 8000
-
-# Using Node.js (with http-server)
-npx http-server
-```
-
-Then navigate to `http://localhost:8000`
-
-## GitHub Pages Deployment
-
-This project is designed to be hosted on GitHub Pages:
-
-1. Go to your repository settings
-2. Navigate to "Pages" section
-3. Select the branch you want to deploy (e.g., `main`)
-4. Select the root directory as the source
-5. Save and wait for deployment
-
-Your visualization will be available at: `https://<username>.github.io/<repository-name>/`
-
-## Browser Compatibility
-
-- Chrome/Edge: ✅ Full support
-- Firefox: ✅ Full support
-- Safari: ✅ Full support
-- Mobile browsers: ✅ Supported (with user interaction required)
-
-**Note:** Microphone access requires HTTPS (or localhost for development).
 
 ## Technologies Used
 
@@ -106,4 +74,4 @@ All audio processing happens locally in your browser. No audio data is sent to a
 
 ## License
 
-MIT License - feel free to use and modify as you wish!
+MIT License – feel free to use and modify as you wish, with or without attribution, but keep the license notice intact.
