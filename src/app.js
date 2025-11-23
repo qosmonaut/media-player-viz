@@ -31,6 +31,8 @@ const presetControl = document.getElementById('presetControl');
 const statusDiv = document.getElementById('status');
 const canvas = document.getElementById('visualizer');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
+const iconFullscreen = fullscreenBtn.querySelector('.icon-fullscreen');
+const iconWindow = fullscreenBtn.querySelector('.icon-window');
 const fullscreenHint = document.getElementById('fullscreenHint');
 
 // Initialize visualizer
@@ -311,6 +313,13 @@ function toggleFullscreen() {
 document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement) {
         fullscreenHint.classList.remove('visible');
+        iconFullscreen.style.display = 'inline';
+        iconWindow.style.display = 'none';
+        fullscreenBtn.setAttribute('data-tooltip', 'Enter Fullscreen');
+    } else {
+        iconFullscreen.style.display = 'none';
+        iconWindow.style.display = 'inline';
+        fullscreenBtn.setAttribute('data-tooltip', 'Exit Fullscreen');
     }
 });
 

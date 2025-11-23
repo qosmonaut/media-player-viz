@@ -123,24 +123,15 @@ body {
     font-size: 1em;
 }
 
-.icon-play {
-    transform: translateX(1px);
-}
-
-.icon-stop {
-    font-size: 1.5em;
-    transform: translateY(-4px);
-}
-
-.icon-upload {
-    width: 22px;
-    height: 22px;
-}
-
 .btn-icon:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.1);
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.icon-upload, .icon-play, .icon-stop, .icon-fullscreen, .icon-window {
+    width: 22px;
+    height: 22px;
 }
 
 .control-group {
@@ -215,10 +206,6 @@ select:focus {
     z-index: 20;
     opacity: 0;
     transition: opacity 0.5s ease 5s;
-}
-
-.icon-fullscreen {
-    transform: translateY(-1px);
 }
 
 .app-container:hover .btn-fullscreen {

@@ -98,6 +98,7 @@ This project uses [butterchurn](https://github.com/jberg/butterchurn), a WebGL i
 
 - **Milkdrop** - Original visualization engine by Ryan Geiss
 - **butterchurn** - WebGL port by @jberg (Jordan Berg)
+- **Heroicons** - SVG icons by tailwindcss
 
 ## Privacy
 
