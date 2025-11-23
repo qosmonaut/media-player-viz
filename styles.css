@@ -170,13 +170,17 @@ select {
 }
 
 select:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.7);
     border-color: rgba(255, 255, 255, 0.4);
 }
 
 select:focus {
     border-color: #007bff;
     box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+}
+
+select.menu-open {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9' transform='rotate(180 12 12)'%3e%3c/polyline%3e%3c/svg%3e");
 }
 
 .status-overlay {

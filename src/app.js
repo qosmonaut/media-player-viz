@@ -65,6 +65,22 @@ audioFileInput.addEventListener('change', handleFileUpload);
 playPauseBtn.addEventListener('click', toggleVisualization);
 fullscreenBtn.addEventListener('click', toggleFullscreen);
 
+// Handle select menu arrow rotation and focus states
+document.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', () => {
+        select.blur();
+        select.classList.remove('menu-open');
+    });
+    
+    select.addEventListener('blur', () => {
+        select.classList.remove('menu-open');
+    });
+    
+    select.addEventListener('click', () => {
+        select.classList.toggle('menu-open');
+    });
+});
+
 vizTypeSelect.addEventListener('change', (e) => {
     const type = e.target.value;
     visualizer.setType(type);
