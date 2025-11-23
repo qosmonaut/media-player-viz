@@ -52,10 +52,10 @@ body {
     background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
     pointer-events: auto;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease 5s;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
 }
 
 .credits {
@@ -83,13 +83,14 @@ body {
     gap: 20px;
     pointer-events: auto;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease 5s;
 }
 
 /* Show controls on hover over the container */
 .app-container:hover .controls-top,
 .app-container:hover .controls-bottom {
     opacity: 1;
+    transition: opacity 0.3s ease 0s;
 }
 
 .app-title {
@@ -119,6 +120,17 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     backdrop-filter: blur(5px);
+    font-size: 1em;
+}
+
+.icon-play {
+    transform: translateX(1px);
+}
+
+.icon-stop {
+    font-size: 1.5em;
+    transform: translateY(-4px);
+}
 
 .icon-upload {
     width: 22px;
@@ -144,7 +156,7 @@ select {
     background: rgba(0, 0, 0, 0.5);
     color: white;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
     backdrop-filter: blur(5px);
     outline: none;
     /* Ensure arrow has space */
@@ -155,6 +167,13 @@ select {
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 16px;
+}
+
+#presetSelect {
+    width: clamp(300px, 42vw, 365px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 select:hover {
@@ -176,7 +195,7 @@ select:focus {
     background: rgba(0, 0, 0, 0.7);
     border-radius: 30px;
     backdrop-filter: blur(10px);
-    font-size: 16px;
+    font-size: 1rem;
     pointer-events: none;
     z-index: 5;
     transition: opacity 0.5s ease;
@@ -190,11 +209,16 @@ select:focus {
 
 .btn-fullscreen {
     position: absolute;
+    font-size: 1.2rem;
     bottom: 20px;
     right: 20px;
     z-index: 20;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease 5s;
+}
+
+.icon-fullscreen {
+    transform: translateY(-1px);
 }
 
 .app-container:hover .btn-fullscreen {
@@ -271,11 +295,39 @@ select:focus {
    but centered above should be fine given margin */
 @media (max-width: 768px) {
     .controls-bottom {
-        flex-direction: column;
-        gap: 15px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: left;
+        gap: 10px;
     }
     
     .app-title {
         font-size: 1.2em;
+    }
+    
+    #presetSelect {
+        max-width: calc(100vw - 360px);
+    }
+}
+
+@media (max-width: 420px) {
+    #presetSelect {
+        display: none !important;
+    }
+
+    #presetControl {
+        display: none !important;
+    }
+
+    .controls-top {
+        padding: 10px;
+    }
+
+    .app-title {
+        font-size: 1em;
+    }
+
+    .credits {
+        font-size: 0.75em;
     }
 }
