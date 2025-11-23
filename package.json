@@ -8,6 +8,7 @@
     "watch": "webpack --watch",
     "start": "npx http-server ./dist",
     "dev": "webpack serve",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name retroviz",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
