@@ -25,7 +25,6 @@ const colorControl = document.getElementById('colorControl');
 const presetControl = document.getElementById('presetControl');
 const statusDiv = document.getElementById('status');
 const canvas = document.getElementById('visualizer');
-const presetOverlay = document.getElementById('presetOverlay');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
 const fullscreenHint = document.getElementById('fullscreenHint');
 
@@ -34,12 +33,7 @@ visualizer = new Visualizer(canvas, null, (presetName) => {
     // Flash preset name when auto-rotating
     if (visualizer.isAutoRotating) {
         const shortName = presetName.length > 50 ? presetName.substring(0, 50) + '...' : presetName;
-        presetOverlay.textContent = shortName;
-        presetOverlay.classList.add('visible');
-        
-        setTimeout(() => {
-            presetOverlay.classList.remove('visible');
-        }, 3000);
+        showStatus(shortName);
     }
 });
 
