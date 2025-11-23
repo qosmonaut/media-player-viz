@@ -86,9 +86,9 @@ Your visualization will be available at: `https://<username>.github.io/<reposito
 
 - **Web Audio API** - For audio input and frequency analysis
 - **Canvas API** - For rendering visualizations
+- **WebGL** - For hardware-accelerated graphics
+- **File API** - For loading songs
 - **MediaDevices API** - For microphone access
-- **[butterchurn](https://github.com/jberg/butterchurn)** - WebGL implementation of the Milkdrop visualizer
-- **[butterchurn-presets](https://github.com/jberg/butterchurn-presets)** - Preset collection for butterchurn
 - **Webpack** - Module bundler for JavaScript
 - Pure HTML5, CSS3, and JavaScript (ES6+)
 
@@ -96,9 +96,9 @@ Your visualization will be available at: `https://<username>.github.io/<reposito
 
 This project uses [butterchurn](https://github.com/jberg/butterchurn), a WebGL implementation of the legendary Winamp / Milkdrop visualization engine. Milkdrop was originally created by Ryan Geiss and has been a beloved music visualization tool since the early 2000s. The butterchurn project brings this classic experience to modern web browsers.
 
-- **Milkdrop** - Original visualization engine by Ryan Geiss
-- **butterchurn** - WebGL port by @jberg (Jordan Berg)
-- **Heroicons** - SVG icons by tailwindcss
+- **[Milkdrop](https://www.geisswerks.com/milkdrop/)** - Original visualization engine by @geiss (Ryan Geiss)
+- **[butterchurn](https://github.com/jberg/butterchurn)** - WebGL port by @jberg (Jordan Berg)
+- **[Heroicons](https://heroicons.com/)** - SVG icons by tailwindcss
 
 ## Privacy
 
