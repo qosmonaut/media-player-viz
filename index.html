@@ -13,7 +13,7 @@
         
         <div class="controls-overlay">
             <div class="controls-top">
-                <a href="https://github.com/qosmonaut/retroviz" class="app-title" target="_blank" aria-label="View source on GitHub">RetroViz</a>
+                <a href="https://github.com/qosmonaut/retroviz" class="app-title" target="_blank" data-tooltip="View source on GitHub" data-tooltip-pos="bottom">RetroViz</a>
                 <div class="credits">
                     Built by <a href="https://github.com/qosmonaut" target="_blank">qosmonaut</a> |
                     Powered by <a href="https://github.com/jberg/butterchurn" target="_blank">butterchurn</a>
@@ -21,13 +21,13 @@
             </div>
 
             <div class="controls-bottom">
-                <button id="playPauseBtn" class="btn-icon" aria-label="Start/Stop Visualization">
+                <button id="playPauseBtn" class="btn-icon" data-tooltip="Start/Stop">
                     <span class="icon-play">▶</span>
                     <span class="icon-stop" style="display: none;">■</span>
                 </button>
                 
-                <div class="control-group">
-                    <select id="vizType" aria-label="Select Visualization Type">
+                <div class="control-group" data-tooltip="Visualization">
+                    <select id="vizType">
                         <option value="milkdrop" selected>Milkdrop</option>
                         <option value="bars">Bars</option>
                         <option value="oscilloscope">Oscilloscope</option>
@@ -36,8 +36,8 @@
                     </select>
                 </div>
                 
-                <div class="control-group" id="colorControl" style="display: none;">
-                    <select id="colorScheme" aria-label="Select Color Scheme">
+                <div class="control-group" id="colorControl" style="display: none;" data-tooltip="Color Scheme">
+                    <select id="colorScheme">
                         <option value="classic">Classic Blue</option>
                         <option value="fire">Fire</option>
                         <option value="ocean">Ocean</option>
@@ -46,8 +46,8 @@
                     </select>
                 </div>
 
-                <div class="control-group" id="presetControl">
-                    <select id="presetSelect" aria-label="Select Milkdrop Preset">
+                <div class="control-group" id="presetControl" data-tooltip="Select Preset">
+                    <select id="presetSelect">
                         <option value="auto">Auto-Rotate (15s)</option>
                         <!-- Presets will be populated by JS -->
                     </select>
@@ -62,7 +62,9 @@
         <div id="presetOverlay" class="preset-overlay"></div>
         <div id="fullscreenHint" class="fullscreen-hint">Press ESC to exit fullscreen mode</div>
         
-        <button id="fullscreenBtn" class="btn-icon btn-fullscreen" aria-label="Toggle Fullscreen">⛶</button>
+        <button id="fullscreenBtn" class="btn-icon btn-fullscreen" data-tooltip="Toggle Fullscreen">
+            <span class="icon-fullscreen">⛶</span>
+        </button>
     </div>
     
     <script src="index.js"></script>

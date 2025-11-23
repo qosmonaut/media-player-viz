@@ -137,8 +137,7 @@ async function startVisualization() {
         isRunning = true;
         iconPlay.style.display = 'none';
         iconStop.style.display = 'inline';
-        playPauseBtn.setAttribute('aria-label', 'Stop Visualization');
-        showStatus('Microphone Active');
+        playPauseBtn.setAttribute('data-tooltip', 'Stop Visualization');
         
         // Start animation loop
         animate();
@@ -177,7 +176,7 @@ function stopVisualization() {
     // Update UI
     iconPlay.style.display = 'inline';
     iconStop.style.display = 'none';
-    playPauseBtn.setAttribute('aria-label', 'Start Visualization');
+    playPauseBtn.setAttribute('data-tooltip', 'Start Visualization');
     showStatus('Stopped');
 }
 
