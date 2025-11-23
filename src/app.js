@@ -53,7 +53,7 @@ const presets = visualizer.getPresets();
 Object.keys(presets).forEach(key => {
     const option = document.createElement('option');
     option.value = key;
-    option.text = key;
+    option.text = key.length > 50 ? key.substring(0, 50) + '...' : key;
     presetSelect.appendChild(option);
 });
 
