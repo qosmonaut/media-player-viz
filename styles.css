@@ -9,6 +9,7 @@ body {
     background: #000;
     color: #fff;
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
     overflow: hidden;
 }
@@ -76,6 +77,7 @@ body {
 
 .controls-bottom {
     padding: 20px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
     background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
     display: flex;
     justify-content: center;
@@ -202,6 +204,7 @@ select:focus {
     position: absolute;
     font-size: 1.2rem;
     bottom: 20px;
+    bottom: max(20px, env(safe-area-inset-bottom));
     right: 20px;
     z-index: 20;
     opacity: 0;
