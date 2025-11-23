@@ -21,6 +21,11 @@
             </div>
 
             <div class="controls-bottom">
+                <input type="file" id="audioFileInput" accept="audio/*" style="display: none;">
+                <button id="uploadBtn" class="btn-icon" data-tooltip="Open Song">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-upload" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+                </button>
+
                 <button id="playPauseBtn" class="btn-icon" data-tooltip="Start/Stop">
                     <span class="icon-play">▶</span>
                     <span class="icon-stop" style="display: none;">■</span>
@@ -56,7 +61,7 @@
         </div>
         
         <div class="status-overlay" id="status" role="status" aria-live="polite">
-            Ready
+            Ready – upload a song to play or use microphone input
         </div>
         
         <div id="fullscreenHint" class="fullscreen-hint">Press ESC to exit fullscreen mode</div>

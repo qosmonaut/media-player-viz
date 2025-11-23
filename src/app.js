@@ -13,8 +13,13 @@ let bufferLength;
 let animationId;
 let visualizer;
 let isRunning = false;
+let audioSourceType = 'microphone'; // 'microphone' or 'file'
+let audioElement = null;
+let fileSource = null;
 
 // DOM elements
+const audioFileInput = document.getElementById('audioFileInput');
+const uploadBtn = document.getElementById('uploadBtn');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const iconPlay = playPauseBtn.querySelector('.icon-play');
 const iconStop = playPauseBtn.querySelector('.icon-stop');
@@ -53,6 +58,8 @@ Object.keys(presets).forEach(key => {
 });
 
 // Event listeners
+uploadBtn.addEventListener('click', () => audioFileInput.click());
+audioFileInput.addEventListener('change', handleFileUpload);
 playPauseBtn.addEventListener('click', toggleVisualization);
 fullscreenBtn.addEventListener('click', toggleFullscreen);
 
@@ -87,45 +94,106 @@ presetSelect.addEventListener('change', (e) => {
 });
 
 /**
+ * Handle file upload
+ */
+function handleFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Stop current visualization
+    if (isRunning) {
+        stopVisualization();
+    }
+
+    // Clean up previous audio element if exists
+    if (audioElement) {
+        audioElement.pause();
+        audioElement.src = '';
+        audioElement = null;
+    }
+
+    audioSourceType = 'file';
+    audioElement = new Audio(URL.createObjectURL(file));
+    audioElement.loop = true; // Loop the song
+    
+    showStatus(`Loaded: ${file.name}`);
+    
+    // Start visualization with new file
+    startVisualization();
+}
+
+/**
  * Toggle visualization state
  */
 function toggleVisualization() {
     if (isRunning) {
-        stopVisualization();
+        if (audioSourceType === 'file' && audioElement) {
+            audioElement.pause();
+            isRunning = false;
+            iconPlay.style.display = 'inline';
+            iconStop.style.display = 'none';
+            playPauseBtn.setAttribute('data-tooltip', 'Resume Visualization');
+            showStatus('Paused');
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        } else {
+            stopVisualization();
+        }
     } else {
         startVisualization();
     }
 }
 
 /**
- * Start the visualization by requesting microphone access
+ * Start the visualization
  */
 async function startVisualization() {
     try {
-        showStatus('Requesting microphone access...');
-        
-        // Create audio context
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        
-        bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
-        
-        // Request microphone access
-        mediaStream = await navigator.mediaDevices.getUserMedia({ 
-            audio: {
-                echoCancellation: false,
-                noiseSuppression: false,
-                autoGainControl: false
-            } 
-        });
-        
-        microphone = audioContext.createMediaStreamSource(mediaStream);
-        microphone.connect(analyser);
-        
-        // Initialize butterchurn with audio context and audio node
-        visualizer.initButterchurn(audioContext, microphone);
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+        }
+
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+
+        if (audioSourceType === 'microphone') {
+            if (!mediaStream) {
+                showStatus('Requesting microphone access...');
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        autoGainControl: false
+                    } 
+                });
+                microphone = audioContext.createMediaStreamSource(mediaStream);
+                microphone.connect(analyser);
+            }
+            visualizer.initButterchurn(audioContext, microphone);
+            showStatus('Microphone Active');
+        } else if (audioSourceType === 'file') {
+            if (!audioElement) {
+                showStatus('No file loaded');
+                return;
+            }
+            
+            if (!fileSource) {
+                fileSource = audioContext.createMediaElementSource(audioElement);
+                fileSource.connect(analyser);
+                analyser.connect(audioContext.destination); // Connect to speakers
+            }
+            
+            visualizer.initButterchurn(audioContext, fileSource);
+            await audioElement.play();
+            showStatus('Playing Audio');
+        }
         
         // Update UI
         isRunning = true;
@@ -134,17 +202,19 @@ async function startVisualization() {
         playPauseBtn.setAttribute('data-tooltip', 'Stop Visualization');
         
         // Start animation loop
-        animate();
+        if (!animationId) {
+            animate();
+        }
         
     } catch (error) {
-        console.error('Error accessing microphone:', error);
-        showStatus('Error: Could not access microphone');
+        console.error('Error starting visualization:', error);
+        showStatus(`Error: ${error.message}`);
         stopVisualization();
     }
 }
 
 /**
- * Stop the visualization and release microphone
+ * Stop the visualization
  */
 function stopVisualization() {
     isRunning = false;
@@ -154,16 +224,30 @@ function stopVisualization() {
         animationId = null;
     }
     
-    if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-        mediaStream = null;
+    if (audioSourceType === 'microphone') {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+        }
+        if (microphone) {
+            microphone.disconnect();
+            microphone = null;
+        }
+    } else if (audioSourceType === 'file') {
+        if (audioElement) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+        }
     }
     
-    if (audioContext) {
+    // We don't close audioContext anymore to allow reuse, just suspend if needed or leave open
+    // But to be safe and reset state completely for mic:
+    if (audioSourceType === 'microphone' && audioContext) {
         audioContext.close();
         audioContext = null;
+        analyser = null;
     }
-    
+
     // Clear canvas
     visualizer.clear();
     
