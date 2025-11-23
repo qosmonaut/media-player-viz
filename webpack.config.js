@@ -9,12 +9,24 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
         { from: 'index.html', to: 'index.html' },
-        { from: 'styles.css', to: 'styles.css' },
       ],
     }),
   ],
+  devServer: {
+    static: './dist',
+    hot: true,
+    open: true,
+  },
 };
